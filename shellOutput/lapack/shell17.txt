@@ -1,0 +1,5 @@
+Current Parameters: M=10000 k=120 N=8000
+Save Raw X data to ./rawData/lapack/rawdata17_x.txt
+Save Raw Y data to ./rawData/lapack/rawdata17_y.txt
+Time usage: 1419.5559s
+Save polyfit data to ./results/lapack/fitresults17.txt
