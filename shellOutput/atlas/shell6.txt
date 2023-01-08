@@ -1,0 +1,5 @@
+Current Parameters: M=10000 k=100 N=5000
+Save Raw X data to ./rawData/atlas/rawdata6_x.txt
+Save Raw Y data to ./rawData/atlas/rawdata6_y.txt
+Time usage: 139.5739s
+Save polyfit data to ./results/atlas/fitresults6.txt

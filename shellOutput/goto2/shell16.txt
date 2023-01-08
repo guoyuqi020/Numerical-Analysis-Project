@@ -1,0 +1,5 @@
+Current Parameters: M=10000 k=150 N=475
+Save Raw X data to ./rawData/goto2/rawdata16_x.txt
+Save Raw Y data to ./rawData/goto2/rawdata16_y.txt
+Time usage: 5.1785s
+Save polyfit data to ./results/goto2/fitresults16.txt
