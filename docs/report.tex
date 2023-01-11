@@ -63,7 +63,7 @@
   tabsize=2,                       % sets default tabsize to 2 spaces  
 }  
 
-\begin{document} 
+\begin{document}
 \title{数值分析期末实践报告}
 \author{郭宇祺}
 \date{}
@@ -103,15 +103,15 @@
 \begin{equation*}
   A^TA
   \begin{bmatrix}
-    a_0 \\
-    a_1 \\
+    a_0    \\
+    a_1    \\
     \vdots \\
     a_n
   \end{bmatrix}
   =A^T
   \begin{bmatrix}
-    y_1 \\
-    y_2 \\
+    y_1    \\
+    y_2    \\
     \vdots \\
     y_m
   \end{bmatrix}
@@ -122,13 +122,15 @@
 \begin{equation*}
   A=
   \begin{bmatrix}
-    1 & x_1 & x_1^2 & x_1^3 & \cdots & x_1^n \\
-    1 & x_2 & x_2^2 & x_2^4 & \cdots & x_2^n \\
-    1 & x_3 & x_3^2 & x_3^3 & \cdots & x_3^n \\
-    \vdots & \vdots & \vdots & \vdots & & \vdots \\
-    1 & x_m & x_m^2 &x_m^3 & \cdots & x_m^n
+    1      & x_1    & x_1^2  & x_1^3  & \cdots & x_1^n  \\
+    1      & x_2    & x_2^2  & x_2^4  & \cdots & x_2^n  \\
+    1      & x_3    & x_3^2  & x_3^3  & \cdots & x_3^n  \\
+    \vdots & \vdots & \vdots & \vdots &        & \vdots \\
+    1      & x_m    & x_m^2  & x_m^3  & \cdots & x_m^n
   \end{bmatrix}
 \end{equation*}
+
+由于LAPACK已经提供了最小二乘法解线性方程组的相关函数，因此直接调用相关函数求解线性方程组$A\overrightarrow{a}=\overrightarrow{y}$即可。
 
 \subsection{具体实现及工具说明}
 曲线拟合参数计算程序使用C/C++语言编写，运行脚本及绘图脚本使用python语言编写。
@@ -136,7 +138,7 @@ C/C++编译器使用Clang/LLVM 12.0，编译标准使用C++17，优化等级指�
 
 实验中，分别使用三种数学库组合作为后端进行最小二乘计算，他们是：
 \begin{itemize}
-  \item CBLAS-v3.11.0 + LAPACKE-v3.11.0 
+  \item CBLAS-v3.11.0 + LAPACKE-v3.11.0
   \item GotoBLAS2-v1.13 + clapack-v3.10.3-8ubuntu7
   \item ATLAS-v3.10.3-8ubuntu7 + clapack-v3.10.3-8ubuntu7
 \end{itemize}
@@ -187,57 +189,51 @@ generate.py中已经定义了一系列待测试的(M, k, N)参数，如有需要
 
 \begin{figure}[tbp]
   \centering
-  \includegraphics[width=0.5\textwidth]{figures/lapack/figure5_M_10000_k_100_N_1000.png}
-  \caption{M=10000, k=100, N=1000, CBLAS}
+  \includegraphics[width=0.5\textwidth]{figures/lapack/figure2_M_100000_k_100_N_315.png}
+  \caption{M=100000, k=100, N=315, CBLAS}
   \label{fig:exp3}
 \end{figure}
 
 \begin{figure}[tbp]
   \centering
-  \includegraphics[width=0.5\textwidth]{figures/lapack/figure8_M_10000_k_100_N_8000.png}
-  \caption{M=10000, k=100, N=8000, CBLAS}
+  \includegraphics[width=0.5\textwidth]{figures/lapack/figure5_M_100000_k_100_N_500.png}
+  \caption{M=100000, k=100, N=500, CBLAS}
   \label{fig:exp4}
 \end{figure}
 
 \begin{figure}[tbp]
   \centering
-  \includegraphics[width=0.5\textwidth]{figures/atlas/figure7_M_10000_k_100_N_8000.png}
-  \caption{M=10000, k=100, N=8000, ATLAS}
+  \includegraphics[width=0.5\textwidth]{figures/atlas/figure8_M_100000_k_100_N_1000.png}
+  \caption{M=100000, k=100, N=1000, CBLAS}
   \label{fig:exp5}
 \end{figure}
 
-\begin{figure}[tbp]
-  \centering
-  \includegraphics[width=0.5\textwidth]{figures/atlas/figure4_M_10000_k_100_N_1000.png}
-  \caption{M=10000, k=100, N=1000, ATLAS}
-  \label{fig:atlas}
-\end{figure}
 
 
-当参数k取较小值（以k=100为例），且多项式度数$N$在$\pi k$附近取值时，在$x \in [0.8, 1.0]$区间上以及零点附近，拟合所得多项式曲线能够较好地贴合原始曲线，如图\ref{fig:exp1}所示，其中橙色曲线为原始观测数据，蓝色曲线为拟合所得的多项式曲线；但是在$x \in (0, 0.8)$区间上，由于双精度数据结构精度所限，高次项信息几乎完全丢失，因此拟合效果不够理想，仅能够勉强拟合出原始曲线起伏的变化趋势。增大观测数据的数量$M$对曲线拟合几乎没有帮助，如图\ref{fig:exp2}所示。增大待拟合多项式的度数$N$能够在一定程度上取得更好的效果，拟合曲线在$x \in (0, 0.8)$区间上的起伏会变得更大从而更贴近原始曲线，但仍然无法捕获原始曲线中存在的高频信息，如图\ref{fig:exp3}所示。并且，当$N$取值过大时，拟合曲线在靠近0点附近（CBLAS）或靠近1点（GotoBLAS2和ATLAS）附近可能会面临取值爆炸的问题，如图\ref{fig:exp4}和\ref{fig:exp5}所示。三种数学库组合在处理这些参数时表现差异不大，主要区别在于CBLAS + LAPACKE组合拟合得到的曲线较为光滑，而其他两种数学库组合得到的拟合曲线可能出现较多的毛刺，如图\ref{fig:atlas}所示。此种差异可能是由于所使用的lapack库不同所导致的。由于GotoBLAS2和ATLAS均与LAPACKE存在头文件冲突，因此在实验中使用ATLAS自带的lapack库clapack作为替代。
+取观察数据个数$M$=10000，当参数$k$取较小值（以$k$=100为例），且多项式度数$N$在$\pi k$附近取值时，在$x \in [0.7, 1.0]$区间上以及零点附近区间$x \in [0, 0.1]$，拟合所得多项式曲线能够较好地贴合原始曲线，如图\ref{fig:exp1}所示，其中橙色曲线为原始观测数据，蓝色曲线为拟合所得的多项式曲线；但是在$x \in (0.1, 0.7)$区间上，由于双精度数据结构精度所限，高次项信息失真较为严重，因此拟合效果不够理想，仅能够勉强拟合出原始曲线起伏的变化趋势。增大观测数据的数量$M$对曲线拟合效果有较大帮助，如图\ref{fig:exp2}和图\ref{fig:exp3}所示。因此后续实验均取$M$=100000。增大待拟合多项式的度数$N$对拟合效果没有明显影响，如图\ref{fig:exp4}和图\ref{fig:exp5}所示。三种数学库组合在处理这些参数时拟合效果差异不大，因此不做过多展示。
 
 \begin{figure}[tbp]
   \centering
-  \includegraphics[width=0.5\textwidth]{figures/lapack/figure18_M_10000_k_150_N_475.png}
-  \caption{M=10000, k=150, N=475, CBLAS}
+  \includegraphics[width=0.5\textwidth]{figures/lapack/figure13_M_100000_k_150_N_500.png}
+  \caption{M=100000, k=150, N=500, CBLAS}
   \label{fig:exp6}
 \end{figure}
 
 \begin{figure}[tbp]
   \centering
-  \includegraphics[width=0.5\textwidth]{figures/lapack/figure35_M_10000_k_500_N_1580.png}
-  \caption{M=10000, k=500, N=1580, CBLAS}
+  \includegraphics[width=0.5\textwidth]{figures/lapack/figure15_M_100000_k_200_N_630.png}
+  \caption{M=100000, k=200, N=630, CBLAS}
   \label{fig:exp7}
 \end{figure}
 
-\begin{figure}[tbp]
-  \centering
-  \includegraphics[width=0.5\textwidth]{figures/atlas/figure31_M_10000_k_500_N_1580.png}
-  \caption{M=10000, k=500, N=1580, ATLAS}
-  \label{fig:exp8}
-\end{figure}
+% \begin{figure}[tbp]
+%   \centering
+%   \includegraphics[width=0.5\textwidth]{figures/atlas/figure31_M_10000_k_500_N_1580.png}
+%   \caption{M=10000, k=500, N=1580, ATLAS}
+%   \label{fig:exp8}
+% \end{figure}
 
-随着参数k的增大，由于随机扰动的存在，拟合效果会逐渐变差，只有在非常靠近1点的很小区间内拟合曲线能够较好地贴合原始曲线，在其他区间只能非常粗略地捕获到原始曲线的起伏信息，如图\ref{fig:exp6}和\ref{fig:exp7}所示。在处理这些参数时，使用LAPACKE的CBLAS的效果明显好于使用clapack的GotoBLAS2和ATLAS：当参数k取一个较大值500时，前者拟合得到的曲线在$x \in (0, 0.8)$区间上仍呈现出了一定的起伏趋势，如图\ref{fig:exp7}所示；而后者在该区间上所得的拟合曲线呈几乎没有起伏的直线，如图\ref{fig:exp8}所示。
+随着参数k的增大，由于随机扰动的存在，拟合效果会逐渐变差，只有在非常靠近1点与0点的很小区间内拟合曲线能够较好地贴合原始曲线，在其他区间只能非常粗略地捕获到原始曲线的起伏信息，如图\ref{fig:exp6}和\ref{fig:exp7}所示。
 
 
 
@@ -247,7 +243,7 @@ generate.py中已经定义了一系列待测试的(M, k, N)参数，如有需要
 \subsubsection{不同数学库拟合效率对比}
 表\ref{tlb:perf}展示了三种数学库在各种参数组合下计算曲线拟合参数所需的时间，其中耗时数据的单位为秒。我同时计算了GotoBlas2 + clapack和ATLAS + clapack这两种数学库组合相比于CBLAS + LAPACKE在时间上取得的加速比，相关结果展示在\emph{SpeedUp}列中。由于GotoBLAS2库使用多个线程进行矩阵运算，而CBLAS和ATLAS库均只使用一个线程进行运算，因此，为了使对比更为公平，我在实验中统计GotoBLAS2库所有线程耗时的总和作为其耗时的数据。
 
-从表\ref{tlb:perf}中可以看出，相比于基础的CBLAS + LAPACKE组合，GotoBLAS2 + clapack组合在计算效率上没有取得优势，并且由于管理多个线程引起的额外开销，其在总体耗时上略高于CBLAS + LAPACKE组合（平均计算效率约为CBLAS + LAPACKE组合的0.88倍）。但是其通过引入并行机制，可以大大提高程序的运行效率。在本次实验中，我观察到GotoBLAS2 + clapack组合最多可以使用32个线程进行并行运算，因此相比于CBLAS + LAPACKE组合，GotoBLAS2 + clapack组合在运行效率上的加速比能达到约$0.88\times 32=28.16$，从而实现较好的加速效果。ATLAS + clapack组合则主要通过算法优化来实现运行加速。在与CBLAS + LAPACKE组合同样采用单线程模式运行的前提下，ATLAS + clapack组合相较于CBLAS + LAPACKE组合在运行时间上取得的平均加速比为3.77。因此使用ATLAS + clapack组合在无法并行运算的环境下也能够取得不错的加速效果。
+从表\ref{tlb:perf}中可以看出，相比于基础的CBLAS + LAPACKE组合，GotoBLAS2 + clapack组合在计算效率上没有取得明显优势（平均计算效率约为CBLAS + LAPACKE组合的1.01倍），并且由于管理多个线程引起的额外开销，其在处理部分参数组合时耗时略高于CBLAS + LAPACKE组合。但是其通过引入并行机制，可以大大提高程序的运行效率。在本次实验中，我观察到GotoBLAS2 + clapack组合最多可以使用32个线程进行并行运算，因此相比于CBLAS + LAPACKE组合，GotoBLAS2 + clapack组合在运行效率上的加速比能达到约32倍，从而实现较好的加速效果。ATLAS + clapack组合则主要通过算法优化来实现运行加速。在与CBLAS + LAPACKE组合同样采用单线程模式运行的前提下，ATLAS + clapack组合相较于CBLAS + LAPACKE组合在运行时间上取得的平均加速比为3.70。因此使用ATLAS + clapack组合在无法并行运算的环境下也能够取得不错的加速效果。
 
 
 
@@ -256,84 +252,46 @@ generate.py中已经定义了一系列待测试的(M, k, N)参数，如有需要
   \caption{三种数学库曲线拟合耗时信息统计}
   \begin{tabular}{l|r|rr|rr}
     \toprule
-    参数组合(M, k, N) & CBLAS + LAPACKE & GotoBLAS2 + clapack & SpeedUp & ATLAS + clapack & SpeedUp\\
+    参数组合(M, k, N)   & CBLAS + LAPACKE & GotoBLAS2 + clapack & SpeedUp & ATLAS + clapack & SpeedUp \\
     \midrule
-    (10000, 100, 315) & 1.57 & 2.16 & 0.73x & 0.43 & 3.65x \\
+    (10000, 100, 315)   & 0.95            & 0.99                & 0.96x   & 0.28            & 3.39x   \\
     \midrule
-    (50000, 100, 315) & 8.30 & 8.62 & 0.92x & 1.99 &  4.17x \\
+    (50000, 100, 315)   & 5.22            & 5.67                & 0.92x   & 1.49            & 3.50x   \\
     \midrule
-    (10000, 100, 400) & 2.70 & 3.64 & 0.74x & 0.73 & 3.70x \\
+    (100000, 100, 315)  & 11.35           & 11.68               & 0.97x   & 3.48            & 3.26x   \\
     \midrule
-    (10000, 100, 500) & 4.54 & 5.70 & 0.80x & 1.26 & 3.60x \\
+    (10000, 100, 500)   & 2.30            & 2.40                & 0.96x   & 0.64            & 3.60x   \\
     \midrule
-    (10000, 100, 1000) & 19.63 & 20.06 & 0.98x  & 5.53 & 3.55x \\
+    (50000, 100, 500)   & 12.54           & 13.12               & 0.96x   & 3.38            & 3.55x   \\
     \midrule
-    (10000, 100, 2000) & 81.14 & 88.66 & 0.92x & 22.22 & 3.65x\\
+    (100000, 100, 500)  & 27.53           & 28.60               & 0.96x   & 7.36            & 3.65x   \\
     \midrule
-    (10000, 100, 5000) & 535.61 & 649.73 & 0.82x & 139.57 & 3.84x \\
+    (10000, 100, 1000)  & 8.87            & 9.04                & 0.98x   & 2.18            & 3.84x   \\
     \midrule
-    (10000, 100, 8000) & 1412.61 & 1622.28 & 0.87x & 344.35 & 4.10x \\
+    (50000, 100, 1000)  & 48.22           & 48.11               & 1.00x   & 11.70           & 4.10x   \\
     \midrule
-    (10000, 120, 380) & 2.39 & 3.21 & 0.74x & 0.65 & 3.68x \\
+    (100000, 100, 1000) & 104.6           & 104.63              & 1.00x   & 24.04           & 3.68x   \\
     \midrule
-    (50000, 120, 380) & 12.67 & 13.15 & 0.96x & 3.19 & 3.97x \\
+    (100000, 120, 380)  & 15.99           & 17.03               & 0.94x   & 4.36            & 3.97x   \\
     \midrule
-    (10000, 120, 500) & 4.49 & 5.75 & 0.78x &  1.24 & 3.62x \\
+    (100000, 120, 500)  & 27.40           & 27.68               & 0.99x   & 7.02            & 3.62x   \\
     \midrule
-    (10000, 120, 800) & 12.47 & 13.96 & 0.89x & 3.43 & 3.64x \\
+    (100000, 120, 1000) & 103.50          & 104.17              & 0.99x   & 23.81           & 3.64x   \\
     \midrule
-    (10000, 120, 1000) & 19.53 & 20.33 & 0.96x &  5.34 & 3.66x\\
+    (100000, 150, 475)  & 24.96           & 15.09               & 1.65x   & 6.23            & 3.66x   \\
     \midrule
-    (10000, 120, 2000) & 80.70 & 89.69 & 0.90x & 22.11 & 3.65x \\
+    (100000, 150, 500)  & 27.32           & 27.60               & 0.99x   & 6.87            & 3.65x   \\
     \midrule
-    (10000, 120, 5000) & 539.62 & 650.14 & 0.83x & 140.34 & 3.85x\\
+    (100000, 150, 1000) & 104.12          & 104.17              & 0.99x   & 23.55           & 3.85x   \\
     \midrule
-    (10000, 120, 8000) & 1419.56 & 1624.80 & 0.87x & 341.58 & 4.16x\\
+    (100000, 200, 630)  & 42.89           & 42.76               & 1.00x   & 10.26           & 4.16x   \\
     \midrule
-    (10000, 150, 475) & 3.99 & 5.18 & 0.77x  & 1.10 & 3.63x \\
+    (100000, 200, 1000) & 104.67          & 104.26              & 1.00x   & 23.93           & 3.63x   \\
     \midrule
-    (50000, 150, 475) & 20.83 & 20.71 & 1.00x & 5.36 & 3.89x \\
+    (100000, 200, 2000) & 411.63          & 408.69              & 1.01x   & 97.15           & 3.89x   \\
     \midrule
-    (10000, 150, 500) & 4.48 & 5.76 & 0.78x & 1.24 & 3.61x \\
-    \midrule
-    (10000, 150, 800) & 12.47 & 13.98 & 0.89x & 3.42 & 3.65x \\
-    \midrule
-    (10000, 150, 1000) & 19.53 & 20.31 & 0.96x & 5.35 & 3.65x \\
-    \midrule
-    (10000, 150, 2000) & 80.71 & 88.88 & 0.91x &22.12 & 3.65x \\
-    \midrule
-    (10000, 150, 5000) & 539.83 & 649.92 & 0.83x &138.86 & 3.89x \\
-    \midrule
-    (10000, 150, 8000) & 1435.05 & 1625.58 & 0.88x &339.63 & 4.23x \\
-    \midrule
-    (10000, 200, 630) & 7.51 & 9.09 & 0.83x & 2.07 & 3.63x \\
-    \midrule
-    (50000, 200, 630) & 38.11 & 36.55 & 1.04x & 10.17 & 3.75x \\
-    \midrule
-    (10000, 200, 800) & 12.44 & 13.95 & 0.89x & 3.41 & 3.65x \\
-    \midrule
-    (10000, 200, 1000) & 19.47 & 20.14 & 0.97x & 5.36 & 3.63x \\
-    \midrule
-    (10000, 200, 2000) & 80.44 & 88.80 & 0.91x &  22.14 & 3.63x \\
-    \midrule
-    (10000, 200, 5000) & 538.72 & 651.66 & 0.83x & 139.83 & 3.85x \\
-    \midrule
-    (10000, 200, 8000) & 1428.07 & 1625.10 & 0.88x & 338.92 & 4.21x \\
-    \midrule
-    (10000, 500, 1580) & 49.48 & 50.61 & 0.98x & 13.48 & 3.67x \\
-    \midrule
-    (50000, 500, 1580) & 243.95 & 235.18 & 1.04x & 66.93 & 3.67x \\
-    \midrule
-    (10000, 500, 3000) & 187.54 & 226.16 & 0.83x & 50.89 & 3.68x  \\
-    \midrule
-    (10000, 500, 5000) & 537.23 & 649.43 & 0.83x & 139.94 & 3.84x \\
-    \midrule
-    (10000, 500, 8000) & 1425.89 & 1624.83 & 0.88x & 342.92 & 4.16x \\
-    \midrule
-    (50000, 500, 3000) & 874.40 & 1090.35 & 0.80x & 244.21 & 3.58x\\
-    \midrule
-    平均值 & - & - & 0.88x & -  & 3.77x \\
-    \bottomrule    
+    平均值              & -               & -                   & 1.02x   & -               & 3.70x   \\
+    \bottomrule
   \end{tabular}
   \label{tlb:perf}
 \end{table}

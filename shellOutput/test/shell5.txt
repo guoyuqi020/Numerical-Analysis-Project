@@ -1,0 +1,5 @@
+Current Parameters: M=10000 k=120 N=380
+Save Raw X data to ./rawData/test/rawdata5_x.txt
+Save Raw Y data to ./rawData/test/rawdata5_y.txt
+Time usage: 1.3389s
+Save polyfit data to ./results/test/fitresults5.txt

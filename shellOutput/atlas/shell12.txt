@@ -1,5 +1,5 @@
-Current Parameters: M=10000 k=120 N=1000
+Current Parameters: M=100000 k=150 N=475
 Save Raw X data to ./rawData/atlas/rawdata12_x.txt
 Save Raw Y data to ./rawData/atlas/rawdata12_y.txt
-Time usage: 5.3385s
+Time usage: 6.2323s
 Save polyfit data to ./results/atlas/fitresults12.txt

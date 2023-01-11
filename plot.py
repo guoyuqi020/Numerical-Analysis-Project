@@ -28,7 +28,7 @@ if __name__ == "__main__":
     M = int(sys.argv[2])
     k = int(sys.argv[3])
     N = int(sys.argv[4])
-    x = np.linspace(0, 1.0, num=20000)
+    x = np.linspace(0.005, 0.995, num=20000)
     plt.plot(x, calculateFitY(x, fitArguments), label="polyfit")
     plt.plot(rawX, rawY, label="observation")
     plt.figlegend()

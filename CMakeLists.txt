@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.13)
 project(LAPACK-HOMEWORK)
 
 
-option(BUILD_LAPACK_FROM_SRC "Build Full LAPACK(lapack, blas, cblas and lapcke)" ON)
+option(BUILD_LAPACK_FROM_SRC "Build Full LAPACK(lapack, blas, cblas and lapcke)" OFF)
 option(BUILD_CBLAS_FROM_LAPACK_SRC "Build Cblas from LAPACK source code" OFF)
 option(BUILD_LAPACKE_FROM_LAPACK_SRC "Build LAPACKE from LAPACK source code" OFF)
 

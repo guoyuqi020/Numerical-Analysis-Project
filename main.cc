@@ -54,7 +54,7 @@ std::pair<std::vector<double>, std::vector<double>> generateRandomData(uint32_t 
 	{
 		double standard_x = ((double)(2 * i - 1)) / (2 * M);
 		double standard_y = cos(((double)((2 * i - 1) * k)) / (2 * M));
-		ret_x.emplace_back(standard_x * (1 + ratio * ((double)dis(gen) / (double)INT64_MAX)));
+		ret_x.emplace_back(standard_x);
 		ret_y.emplace_back(standard_y * (1 + ratio * ((double)dis(gen) / (double)INT64_MAX)));
 	}
 	return std::make_pair(ret_x, ret_y);
@@ -122,12 +122,12 @@ void outputResults(std::vector<double> &x, std::filesystem::path dirPath, uint32
 
 // 算法参考：最小二乘法拟合曲线，正则方程组解法，https://blog.csdn.net/weixin_52544906/article/details/121341257
 
-/// @brief 对于M维度向量x，计算 (x_j)^i, i=0, 1, ..., N, j=0, 1, ..., M
+/// @brief 对于M维度向量x，计算 (x_j)^i, i=0, 1, ..., N, j=1, 2, ..., M
 /// @param x 观察数据x
 /// @param N 从0次方计算到N次方
 /// @param M 向量x的维数
 /// @return 一个(N+1)*M维的，范德蒙矩阵的转置，第(i, j)元素存储(x_j)^i
-std::vector<double> PowerN(std::vector<double> &x, uint32_t N, uint32_t M)
+std::vector<double> PowerNT(std::vector<double> &x, uint32_t N, uint32_t M)
 {
 	assert(x.size() == M);
 	std::vector<double> results;
@@ -137,6 +137,26 @@ std::vector<double> PowerN(std::vector<double> &x, uint32_t N, uint32_t M)
 		for (uint32_t j = 0; j < M; j++)
 		{
 			results.at(i * M + j) = results.at((i - 1) * M + j) * x.at(j);
+		}
+	}
+	return results;
+}
+
+/// @brief 对于M维度向量x，计算 (x_i)^j, i=1, 2, ..., M, j=0, 1, ..., N
+/// @param x 观察数据x
+/// @param N 从0次方计算到N次方
+/// @param M 向量x的维数
+/// @return 一个M*(N+1)维的，范德蒙矩阵，第(i, j)元素存储(x_i)^j
+std::vector<double> PowerN(std::vector<double> &x, uint32_t N, uint32_t M)
+{
+	assert(x.size() == M);
+	std::vector<double> results;
+	results.resize((N + 1) * M, 1);
+	for (uint32_t i = 0; i < M; i++)
+	{
+		for (uint32_t j = 1; j <= N; j++)
+		{
+			results.at(i * (N + 1) + j) = results.at(i * (N + 1) + j - 1) * x.at(i);
 		}
 	}
 	return results;
@@ -181,19 +201,20 @@ std::vector<double> RightParaMatrices(std::vector<double> &A, std::vector<double
 /// @return 参数向量<a_0, a_1, ... a_n>
 std::vector<double> fitPoints(std::vector<double> &x, std::vector<double> &y, uint32_t M, uint32_t N)
 {
-	auto vonMatrixT = PowerN(x, N, M);
+
 	time_t start_time = clock();
-	auto A = LeftParaMatrices(vonMatrixT, N, M);
-	auto b = RightParaMatrices(vonMatrixT, y, N, M);
 
 #if defined(BUILD_LAPACK)
-	LAPACKE_dgels(LAPACK_ROW_MAJOR, 'N', N + 1, N + 1, 1, A.data(), N + 1, b.data(), 1);
+	auto vonMatrixT = PowerN(x, N, M);
+	LAPACKE_dgels(LAPACK_ROW_MAJOR, 'N', M, N + 1, 1, vonMatrixT.data(), N + 1, y.data(), 1);
 #elif defined(BUILD_ATLAS) || defined(BUILD_GOTO2)
-	clapack_dgels(CblasRowMajor, CblasNoTrans, N + 1, N + 1, 1, A.data(), N + 1, b.data(), N + 1);
+	auto vonMatrixT = PowerNT(x, N, M);
+	clapack_dgels(CblasRowMajor, CblasTrans, N + 1, M, 1, vonMatrixT.data(), M, y.data(), M);
 #endif
+	y.resize(N + 1);
 	time_t end_time = clock();
 	printf("Time usage: %.4lfs\n", ((double)end_time - start_time) / CLOCKS_PER_SEC);
-	return b;
+	return y;
 }
 
 int main(int argc, char **argv)
@@ -214,6 +235,7 @@ int main(int argc, char **argv)
 
 	auto filenameIdx = outputRawData(rawData.first, rawData.second, rawDir);
 	auto res = fitPoints(rawData.first, rawData.second, M, N);
+	assert(res.size() == N + 1);
 	outputResults(res, fitDir, filenameIdx);
 	return 0;
 }
