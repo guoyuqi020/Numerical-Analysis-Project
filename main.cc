@@ -162,37 +162,6 @@ std::vector<double> PowerN(std::vector<double> &x, uint32_t N, uint32_t M)
 	return results;
 }
 
-/// @brief 对于N次曲线的拟合，计算等式左侧参数矩阵A.dot(A.T)，其中A为范德蒙矩阵的转置
-/// @param A 一个(N+1)*M维数组，第(i, j)元素存储(x_j)^i
-/// @param N 待拟合曲线的次数
-/// @param M 观察数据个数
-/// @return 一个(N+1)*(N+1)维数组
-std::vector<double> LeftParaMatrices(std::vector<double> &A, uint32_t N, uint32_t M)
-{
-	assert(A.size() == (N + 1) * M);
-
-	std::vector<double> ret, AT;
-	AT = A;
-	ret.resize((N + 1) * (N + 1), 0);
-	cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasTrans, N + 1, N + 1, M, 1.0, A.data(), M, AT.data(), M, 0.0, ret.data(), N + 1);
-	return ret;
-}
-
-/// @brief 对于N次曲线的拟合，计算等式右侧参数矩阵A.dot(y)，其中A为范德蒙矩阵的转置
-/// @param A 一个(N+1)*M维数组，第(i, j)元素存储(x_j)^i
-/// @param y 观测数据y
-/// @param N 待拟合曲线的次数
-/// @param M 观察数据个数，也是向量y的维数
-/// @return 一个(N+1)维数组
-std::vector<double> RightParaMatrices(std::vector<double> &A, std::vector<double> &y, uint32_t N, uint32_t M)
-{
-	assert(A.size() == (N + 1) * M);
-	std::vector<double> ret;
-	ret.resize(N + 1, 0);
-	cblas_dgemv(CblasRowMajor, CblasNoTrans, N + 1, M, 1.0, A.data(), M, y.data(), 1, 0.0, ret.data(), 1);
-	return ret;
-}
-
 /// @brief 拟合多项式曲线a_0+a_1*x+a_2*x^2+...+a_n*x^n
 /// @param x
 /// @param y
